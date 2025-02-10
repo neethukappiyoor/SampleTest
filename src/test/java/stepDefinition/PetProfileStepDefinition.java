@@ -21,21 +21,13 @@ import io.restassured.response.Response;
 import pageObjectModel.pet.PetApiResponse;
 import pageObjectModel.pet.PetDetails;
 
-public class PetProfileStepDefinition {
+public class PetProfileStepDefinition extends PetApiFunctions  {
     private Response res = null; // Response
-    private SoftAssertions softAssertion = null;
     private static String petUrl = null;
     private PetDetails petInfo = null;
 
-    @Before
-    public void setup() {
-        RestAssured.baseURI = "https://petstore.swagger.io/v2";
-        this.softAssertion = new SoftAssertions();
-    }
-
     @After
     public void tearDown() {
-        this.softAssertion.assertAll();
         RestAssured.reset();
     }
     @Given("As a shop owner, I would add new pet to the store with the below data")
@@ -87,6 +79,27 @@ public class PetProfileStepDefinition {
         Assert.assertNotNull("type field in response is not empty", expectedResponse.getType());
         Assert.assertEquals("Message return id", petId, expectedResponse.getMessage());
 
+    }
+
+    @Then("I can search pet info by status  {string} exists")
+    public void iCanSearchPetInfoByStatusExists(String status) {
+        PetDetails[] petResponse = PetApiFunctions
+                .findPetInfoByStatus(PetProfileStepDefinition.petUrl + "/findByStatus?status=" + status);
+        for (PetDetails petProfile : petResponse) {
+            if (petProfile.getId().equals(Integer.parseInt(status))) {
+                Assert.assertEquals("Verify Pet Status!", petProfile.getStatus(), status);
+            }
+        }
+    }
+
+    @Then("Update a pet in the store with form data {string}{string}{string}")
+    public void updateAPetInTheStoreWithFormData(String petId, String petName, String petStatus) {
+        String param = "name=" + petName + "&status=" + petStatus;
+        PetApiResponse expectedResponse = PetApiFunctions
+                .updatePetDataWithFormData(PetProfileStepDefinition.petUrl + "/" + petId, param);
+        Assert.assertEquals("Status Check Passed!", "200", expectedResponse.getCode().toString());
+        Assert.assertNotNull("type field in response is not empty", expectedResponse.getType());
+        Assert.assertEquals("Message return id", petId, expectedResponse.getMessage());
     }
 }
 

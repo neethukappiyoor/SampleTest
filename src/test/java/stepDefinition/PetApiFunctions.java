@@ -1,6 +1,6 @@
 package stepDefinition;
 
-import Helper.RequestBuilderHelper;
+import helper.RequestBuilderHelper;
 import pageObjectModel.pet.Category;
 import pageObjectModel.pet.PetApiResponse;
 import pageObjectModel.pet.PetDetails;
@@ -16,7 +16,11 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 public class PetApiFunctions {
-
+    protected SoftAssertions softAssertion = null;
+    PetApiFunctions(){
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
+        this.softAssertion = new SoftAssertions();
+    }
     public static PetDetails createPetClass(Map<String, String> petData) {
         Category category = new Category(Integer.parseInt(petData.get("categoryId")),petData.get("categoryName"));
         List<String> photoUrls = new ArrayList<>();
@@ -62,6 +66,7 @@ public class PetApiFunctions {
 
     public static PetDetails fetchPetInfoById(String url, String petId) {
         RequestBuilderHelper apiRequestBuilder = new RequestBuilderHelper(url + "/" + petId, "application/json", null);
+        System.out.println(apiRequestBuilder.toString());
         RequestSpecification requestSpec = apiRequestBuilder.getRequestSpecification();
         requestSpec = RestAssured.given().spec(requestSpec);
         Response res = requestSpec.when().get();
