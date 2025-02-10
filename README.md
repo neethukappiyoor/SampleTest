@@ -8,7 +8,7 @@ A Build Tool - Used Maven
 
 # How to run the project 
 Follow commands to run tests from eclipse or intelliJ
-git clone 
+git clone https://github.com/neethukappiyoor/SampleTest.git
 Import project in IDE as a maven project
 Right click on pom.xml -> Run As -> Maven install or Navigate to \src\test\java\runner and Run As TestRunner.java as JUnit
 
